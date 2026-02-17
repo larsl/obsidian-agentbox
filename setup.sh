@@ -271,22 +271,67 @@ fi
 
 echo "    Du kannst die Datei jetzt in Obsidian öffnen und an dein Vault anpassen."
 
-# --- Step 6: API Key hint ---
+# --- Step 6: Skip Claude Code onboarding ---
 
-info "Fast fertig! Noch ein wichtiger Schritt:"
+info "Konfiguriere Claude Code für Portkey..."
 
-echo ""
-echo "    Claude Code benötigt einen Portkey API-Schlüssel."
-echo "    Folge der Anleitung im Confluence, um einen zu erstellen:"
-echo "    https://confluence.codecentric.de/spaces/TOOLS/pages/340230181/Portkey"
-echo ""
-echo "    Erstelle dann die Datei ~/.agentbox/.env mit diesem Inhalt:"
-echo ""
-echo "        ANTHROPIC_BASE_URL=https://api.portkey.ai"
-echo "        ANTHROPIC_API_KEY=dein-portkey-schlüssel"
-echo ""
+CLAUDE_CONFIG_DIR="$HOME/.claude"
+CLAUDE_JSON="$CLAUDE_CONFIG_DIR/.claude.json"
 
-# --- Step 7: Alias setup ---
+mkdir -p "$CLAUDE_CONFIG_DIR"
+
+# Use Python (available on macOS) to safely update JSON
+python3 -c "
+import json, os
+path = '$CLAUDE_JSON'
+data = {}
+if os.path.exists(path):
+    with open(path) as f:
+        data = json.load(f)
+data['hasCompletedOnboarding'] = True
+with open(path, 'w') as f:
+    json.dump(data, f, indent=2)
+    f.write('\n')
+"
+
+success "Claude Code Onboarding wird übersprungen (Portkey braucht kein Anthropic-Login)."
+
+# --- Step 7: Portkey API key ---
+
+AGENTBOX_ENV_DIR="$HOME/.agentbox"
+AGENTBOX_ENV_FILE="$AGENTBOX_ENV_DIR/.env"
+
+if [[ -f "$AGENTBOX_ENV_FILE" ]] && grep -q "ANTHROPIC_API_KEY" "$AGENTBOX_ENV_FILE"; then
+    success "Portkey-Schlüssel ist bereits in $AGENTBOX_ENV_FILE konfiguriert."
+else
+    info "Portkey API-Schlüssel einrichten"
+
+    echo ""
+    echo "    Claude Code benötigt einen Portkey API-Schlüssel."
+    echo "    Falls du noch keinen hast, erstelle einen nach dieser Anleitung:"
+    echo "    https://confluence.codecentric.de/spaces/TOOLS/pages/340230181/Portkey"
+    echo ""
+
+    PORTKEY_KEY=$(ask "Dein Portkey API-Schlüssel")
+
+    if [[ -z "$PORTKEY_KEY" ]]; then
+        warn "Kein Schlüssel eingegeben. Du kannst ihn später manuell hinterlegen:"
+        echo "    Erstelle die Datei $AGENTBOX_ENV_FILE mit dem Inhalt:"
+        echo ""
+        echo "        ANTHROPIC_BASE_URL=https://api.portkey.ai"
+        echo "        ANTHROPIC_API_KEY=dein-portkey-schlüssel"
+        echo ""
+    else
+        mkdir -p "$AGENTBOX_ENV_DIR"
+        cat > "$AGENTBOX_ENV_FILE" << EOF
+ANTHROPIC_BASE_URL=https://api.portkey.ai
+ANTHROPIC_API_KEY=$PORTKEY_KEY
+EOF
+        success "Portkey-Schlüssel gespeichert in $AGENTBOX_ENV_FILE"
+    fi
+fi
+
+# --- Step 8: Alias setup ---
 
 ALIAS_LINE="alias obsidian-agent=\"$SCRIPT_DIR/obsidian-agent.sh\""
 SHELL_RC="$HOME/.zshrc"

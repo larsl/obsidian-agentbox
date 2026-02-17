@@ -83,28 +83,7 @@ Das Setup-Skript führt dich durch die Einrichtung:
 - Es fragt nach dem Pfad zu deinem Obsidian Vault
 - Es bereitet dein Vault für die KI-Nutzung vor
 
-### 3. Portkey-Schlüssel hinterlegen
-
-Erstelle die Datei `~/.agentbox/.env` mit deinem Portkey-Schlüssel:
-
-```bash
-mkdir -p ~/.agentbox
-cat > ~/.agentbox/.env << 'EOF'
-ANTHROPIC_BASE_URL=https://api.portkey.ai
-ANTHROPIC_API_KEY=dein-portkey-schlüssel-hier
-EOF
-```
-
-Ersetze `dein-portkey-schlüssel-hier` mit dem Schlüssel aus dem Schritt "Portkey API-Schlüssel erstellen".
-
-### 4. Alias einrichten (optional, aber empfohlen)
-
-Damit du einfach `obsidian-agent` tippen kannst statt dem vollen Pfad:
-
-```bash
-echo 'alias obsidian-agent="$HOME/obsidian-agentbox/obsidian-agent.sh"' >> ~/.zshrc
-source ~/.zshrc
-```
+Das Setup-Skript fragt auch nach deinem Portkey-Schlüssel und richtet auf Wunsch einen Alias ein, damit du künftig einfach `obsidian-agent` tippen kannst.
 
 ## Tägliche Nutzung
 
