@@ -92,18 +92,27 @@ else
         /opt/homebrew/bin/bash setup.sh"
 fi
 
-# Check Git
+# Check for git or curl (need at least one to download agentbox)
+HAS_GIT=false
 if command -v git &>/dev/null; then
+    HAS_GIT=true
     success "Git ist installiert."
 else
-    die "Git ist nicht installiert.
-    Auf macOS: Öffne das Terminal und gib 'git' ein – macOS bietet dann die Installation an."
+    warn "Git ist nicht installiert (optional – Download geht auch ohne)."
+fi
+
+if ! command -v curl &>/dev/null; then
+    if [[ "$HAS_GIT" != true ]]; then
+        die "Weder git noch curl gefunden. Bitte installiere mindestens eines davon."
+    fi
 fi
 
 # --- Step 2: Configure agentbox ---
 
 info "Konfiguriere agentbox..."
 
+AGENTBOX_REPO_URL="https://github.com/fletchgqc/agentbox"
+AGENTBOX_ZIP_URL="$AGENTBOX_REPO_URL/archive/refs/heads/main.zip"
 DEFAULT_AGENTBOX_PATH="$HOME/agentbox"
 AGENTBOX_PATH=""
 
@@ -130,21 +139,32 @@ if [[ -z "$AGENTBOX_PATH" ]]; then
         echo "    agentbox gefunden in: $DEFAULT_AGENTBOX_PATH"
         AGENTBOX_PATH="$DEFAULT_AGENTBOX_PATH"
     else
-        echo "    agentbox wird benötigt (https://github.com/fletchgqc/agentbox)."
+        echo "    agentbox wird benötigt ($AGENTBOX_REPO_URL)."
         echo ""
         echo "    Optionen:"
-        echo "    1) Automatisch nach $DEFAULT_AGENTBOX_PATH klonen"
+        echo "    1) Automatisch nach $DEFAULT_AGENTBOX_PATH herunterladen"
         echo "    2) Pfad zu bestehendem agentbox angeben"
         echo ""
         choice=$(ask "Deine Wahl (1 oder 2)" "1")
 
         if [[ "$choice" == "1" ]]; then
             if [[ -d "$DEFAULT_AGENTBOX_PATH" ]]; then
-                warn "Ordner $DEFAULT_AGENTBOX_PATH existiert bereits, wird aktualisiert..."
-                git -C "$DEFAULT_AGENTBOX_PATH" pull --ff-only 2>/dev/null || true
-            else
+                warn "Ordner $DEFAULT_AGENTBOX_PATH existiert bereits."
+                if [[ "$HAS_GIT" == true ]] && [[ -d "$DEFAULT_AGENTBOX_PATH/.git" ]]; then
+                    echo "    Aktualisiere via git pull..."
+                    git -C "$DEFAULT_AGENTBOX_PATH" pull --ff-only 2>/dev/null || true
+                fi
+            elif [[ "$HAS_GIT" == true ]]; then
                 echo "    Klone agentbox..."
-                git clone https://github.com/fletchgqc/agentbox.git "$DEFAULT_AGENTBOX_PATH"
+                git clone "$AGENTBOX_REPO_URL.git" "$DEFAULT_AGENTBOX_PATH"
+            else
+                echo "    Lade agentbox herunter..."
+                TMPZIP="$(mktemp /tmp/agentbox-XXXXXX.zip)"
+                curl -sL "$AGENTBOX_ZIP_URL" -o "$TMPZIP" || die "Download fehlgeschlagen. Prüfe deine Internetverbindung."
+                unzip -qo "$TMPZIP" -d /tmp/agentbox-extract || die "Entpacken fehlgeschlagen."
+                mv /tmp/agentbox-extract/agentbox-main "$DEFAULT_AGENTBOX_PATH"
+                rm -rf "$TMPZIP" /tmp/agentbox-extract
+                chmod +x "$DEFAULT_AGENTBOX_PATH/agentbox"
             fi
             AGENTBOX_PATH="$DEFAULT_AGENTBOX_PATH"
         elif [[ "$choice" == "2" ]]; then

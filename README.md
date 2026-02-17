@@ -39,8 +39,19 @@ Folge der [Portkey-Anleitung im Confluence](https://confluence.codecentric.de/sp
 
 ### 1. Projekt herunterladen
 
+**Mit Git:**
 ```bash
 git clone https://github.com/larsl/obsidian-agentbox.git ~/obsidian-agentbox
+```
+
+**Ohne Git:** Lade das [ZIP-Archiv](https://github.com/larsl/obsidian-agentbox/archive/refs/heads/main.zip) herunter, entpacke es und benenne den Ordner in `obsidian-agentbox` um:
+
+```bash
+cd ~
+curl -sL https://github.com/larsl/obsidian-agentbox/archive/refs/heads/main.zip -o obsidian-agentbox.zip
+unzip obsidian-agentbox.zip
+mv obsidian-agentbox-main obsidian-agentbox
+rm obsidian-agentbox.zip
 ```
 
 ### 2. Setup ausführen
