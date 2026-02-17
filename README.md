@@ -103,9 +103,8 @@ Mit dem Plugin **Terminal** kannst du Claude Code direkt in Obsidian nutzen – 
 
 #### Claude Code in Obsidian starten
 
-1. Öffne die Befehlspalette mit `Cmd + P`
-2. Tippe **Terminal** und wähle **Terminal: Open Terminal**
-3. Im Terminal-Fenster tippe:
+1. Klicke auf das Terminal-Symbol in der linken Seitenleiste (oder öffne die Befehlspalette mit `Cmd + P` und wähle **Terminal: Open Terminal**)
+2. Im Terminal-Fenster tippe:
 
 ```bash
 obsidian-agent
