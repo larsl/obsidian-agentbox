@@ -286,17 +286,30 @@ echo "        ANTHROPIC_BASE_URL=https://api.portkey.ai"
 echo "        ANTHROPIC_API_KEY=dein-portkey-schlüssel"
 echo ""
 
-# --- Step 7: Alias hint ---
+# --- Step 7: Alias setup ---
 
-info "Optional: Erstelle einen Alias für schnelleren Zugriff"
+ALIAS_LINE="alias obsidian-agent=\"$SCRIPT_DIR/obsidian-agent.sh\""
+SHELL_RC="$HOME/.zshrc"
 
-echo ""
-echo "    Füge diese Zeile zu deiner ~/.zshrc hinzu:"
-echo ""
-echo "        alias obsidian-agent=\"$SCRIPT_DIR/obsidian-agent.sh\""
-echo ""
-echo "    Danach kannst du einfach 'obsidian-agent' im Terminal eingeben."
-echo ""
+if grep -qF "alias obsidian-agent=" "$SHELL_RC" 2>/dev/null; then
+    success "Alias 'obsidian-agent' ist bereits in $SHELL_RC eingerichtet."
+else
+    info "Alias einrichten"
+    echo ""
+    echo "    Damit du einfach 'obsidian-agent' im Terminal tippen kannst,"
+    echo "    kann ein Alias in deiner $SHELL_RC eingerichtet werden."
+    echo ""
+    if ask_yes_no "Alias jetzt einrichten?"; then
+        echo "$ALIAS_LINE" >> "$SHELL_RC"
+        success "Alias wurde zu $SHELL_RC hinzugefügt."
+        echo "    Wird beim nächsten Terminal-Fenster aktiv, oder jetzt mit: source $SHELL_RC"
+    else
+        echo "    Kein Problem. Du kannst es später manuell nachholen:"
+        echo ""
+        echo "        echo '$ALIAS_LINE' >> $SHELL_RC"
+        echo ""
+    fi
+fi
 
 # --- Done ---
 
@@ -305,11 +318,11 @@ info "Setup abgeschlossen!"
 echo ""
 echo "    So startest du Claude Code mit deinem Vault:"
 echo ""
-echo "        $SCRIPT_DIR/obsidian-agent.sh"
-echo ""
-echo "    Oder mit Alias (nach Einrichtung):"
-echo ""
-echo "        obsidian-agent"
+if grep -qF "alias obsidian-agent=" "$SHELL_RC" 2>/dev/null; then
+    echo "        obsidian-agent"
+else
+    echo "        $SCRIPT_DIR/obsidian-agent.sh"
+fi
 echo ""
 echo "    Viel Spass!"
 echo ""

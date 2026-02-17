@@ -16,8 +16,24 @@ Bevor du loslegst, prüfe diese Checkliste:
 
 - [ ] **macOS** (Apple-Rechner)
 - [ ] **Docker Desktop** installiert und gestartet ([Download](https://www.docker.com/products/docker-desktop/))
+- [ ] **Obsidian** installiert mit einem Vault auf deinem Rechner
 - [ ] **Portkey API-Schlüssel** (siehe [Portkey-Anleitung im Confluence](https://confluence.codecentric.de/spaces/TOOLS/pages/340230181/Portkey))
-- [ ] **Ein Obsidian Vault** auf deinem Rechner
+
+### Obsidian installieren und Vault erstellen
+
+[Obsidian](https://obsidian.md/) ist eine App für Notizen, die mit einfachen Markdown-Dateien arbeitet. Alle Notizen liegen in einem Ordner auf deinem Rechner – dem sogenannten "Vault". Es gibt keinen Cloud-Zwang, deine Daten gehören dir.
+
+Falls du Obsidian noch nicht nutzt:
+
+1. Lade Obsidian herunter: [obsidian.md](https://obsidian.md/)
+2. Installiere und starte die App
+3. Wähle **Create new vault** (Neuen Vault erstellen)
+4. Gib deinem Vault einen Namen (z.B. "Notizen") und wähle einen Speicherort (z.B. `~/Documents/Notizen`)
+5. Klicke auf **Create**
+
+Obsidian legt einen Ordner mit einem `.obsidian`-Unterordner an. **Merke dir den Pfad zu diesem Ordner** – du brauchst ihn bei der Einrichtung. Den Pfad findest du jederzeit in Obsidian unter **Einstellungen > Allgemein > Vault-Pfad** (bzw. **Settings > General > Vault path**).
+
+Falls du Obsidian bereits nutzt, ist dein Vault einfach der Ordner, den du beim Öffnen der App auswählst.
 
 ### Docker Desktop installieren
 
