@@ -1,12 +1,14 @@
 # Obsidian Agent Box
 
-Nutze Claude Code als KI-Assistenten für dein Obsidian Vault – sicher isoliert in einem Docker-Container, ohne Claude Zugriff auf dein ganzes System zu geben.
+Ein codecentric-internes Setup, um Claude Code als KI-Assistenten für dein Obsidian Vault zu nutzen – sicher isoliert in einem Docker-Container, ohne Claude Zugriff auf dein ganzes System zu geben.
 
 ## Was ist das?
 
 Obsidian Agent Box gibt dir einen KI-Assistenten, der direkt mit deinen Obsidian-Notizen arbeiten kann: Notizen erstellen, reorganisieren, Dataview-Queries schreiben, Zusammenfassungen erstellen und vieles mehr. Die KI läuft dabei in einer abgeschotteten Umgebung (Docker-Container) und hat nur Zugriff auf deinen Vault-Ordner – nicht auf deine E-Mails, Dokumente oder andere Dateien.
 
-Das Projekt basiert auf [agentbox](https://github.com/fletchgqc/agentbox), einem bestehenden Setup für isolierte Claude Code Nutzung.
+Der API-Zugang läuft über das codecentric Portkey-Setup – du brauchst keinen eigenen Anthropic-Account.
+
+Das Projekt basiert auf [agentbox](https://github.com/fletchgqc/agentbox) von [John Fletcher](https://github.com/fletchgqc), einem Open-Source-Setup für isolierte Claude Code Nutzung.
 
 ## Was brauchst du?
 
@@ -14,7 +16,7 @@ Bevor du loslegst, prüfe diese Checkliste:
 
 - [ ] **macOS** (Apple-Rechner)
 - [ ] **Docker Desktop** installiert und gestartet ([Download](https://www.docker.com/products/docker-desktop/))
-- [ ] **Anthropic API-Schlüssel** ([hier erstellen](https://console.anthropic.com/))
+- [ ] **Portkey API-Schlüssel** (siehe [Portkey-Anleitung im Confluence](https://confluence.codecentric.de/spaces/TOOLS/pages/340230181/Portkey))
 - [ ] **Ein Obsidian Vault** auf deinem Rechner
 
 ### Docker Desktop installieren
@@ -27,12 +29,9 @@ Falls du Docker noch nicht hast:
 4. Starte Docker Desktop aus dem Programme-Ordner
 5. Warte bis das Docker-Symbol in der Menüleiste erscheint (kleiner Wal)
 
-### API-Schlüssel erstellen
+### Portkey API-Schlüssel erstellen
 
-1. Gehe zu [console.anthropic.com](https://console.anthropic.com/)
-2. Erstelle ein Konto oder melde dich an
-3. Gehe zu **API Keys** und erstelle einen neuen Schlüssel
-4. Kopiere den Schlüssel – du brauchst ihn gleich
+Folge der [Portkey-Anleitung im Confluence](https://confluence.codecentric.de/spaces/TOOLS/pages/340230181/Portkey), um einen API-Schlüssel zu erzeugen. Kopiere den Schlüssel – du brauchst ihn gleich.
 
 ## Einrichtung
 
@@ -57,16 +56,19 @@ Das Setup-Skript führt dich durch die Einrichtung:
 - Es fragt nach dem Pfad zu deinem Obsidian Vault
 - Es bereitet dein Vault für die KI-Nutzung vor
 
-### 3. API-Schlüssel hinterlegen
+### 3. Portkey-Schlüssel hinterlegen
 
-Erstelle die Datei `~/.agentbox/.env` mit deinem API-Schlüssel:
+Erstelle die Datei `~/.agentbox/.env` mit deinem Portkey-Schlüssel:
 
 ```bash
 mkdir -p ~/.agentbox
-echo "ANTHROPIC_API_KEY=dein-schlüssel-hier" > ~/.agentbox/.env
+cat > ~/.agentbox/.env << 'EOF'
+ANTHROPIC_BASE_URL=https://api.portkey.ai
+ANTHROPIC_API_KEY=dein-portkey-schlüssel-hier
+EOF
 ```
 
-Ersetze `dein-schlüssel-hier` mit dem Schlüssel aus Schritt "API-Schlüssel erstellen".
+Ersetze `dein-portkey-schlüssel-hier` mit dem Schlüssel aus dem Schritt "Portkey API-Schlüssel erstellen".
 
 ### 4. Alias einrichten (optional, aber empfohlen)
 
@@ -148,8 +150,8 @@ Lösung: Führe `setup.sh` erneut aus und gib den aktuellen Pfad an.
 
 ### Claude antwortet nicht oder gibt Fehler aus
 
-- Prüfe ob dein API-Schlüssel korrekt in `~/.agentbox/.env` hinterlegt ist
-- Prüfe ob du noch API-Guthaben hast unter [console.anthropic.com](https://console.anthropic.com/)
+- Prüfe ob dein Portkey-Schlüssel korrekt in `~/.agentbox/.env` hinterlegt ist
+- Prüfe ob `ANTHROPIC_BASE_URL=https://api.portkey.ai` ebenfalls in der `.env` steht
 
 ### Der erste Start dauert sehr lange
 
@@ -161,10 +163,15 @@ Dieser Abschnitt ist optional – du brauchst das nicht zu wissen, um das Tool z
 
 **Docker** ist eine Software, die isolierte Umgebungen ("Container") auf deinem Rechner erstellt. Stell dir vor, Claude Code läuft in einem abgeschotteten Raum und kann nur durch ein Fenster auf deinen Vault-Ordner schauen – aber nicht auf den Rest deines Computers.
 
-**agentbox** ist ein Open-Source-Projekt, das Claude Code in so einem Container startet. Es kümmert sich um die Docker-Konfiguration.
+**[agentbox](https://github.com/fletchgqc/agentbox)** ist ein Open-Source-Projekt von [John Fletcher](https://github.com/fletchgqc), das Claude Code in so einem Container startet. Es kümmert sich um die Docker-Konfiguration.
 
 **Obsidian Agent Box** (dieses Projekt) ist ein dünner Wrapper um agentbox, der drei Dinge hinzufügt:
 
 1. Ein einfaches Setup-Skript für die Einrichtung
 2. Eine vorkonfigurierte `CLAUDE.md`-Datei, die Claude beibringt, wie es mit Obsidian-Vaults arbeiten soll
 3. Einen Startbefehl, der deinen Vault automatisch in den Container einbindet
+
+## Credits
+
+- **[agentbox](https://github.com/fletchgqc/agentbox)** von [John Fletcher](https://github.com/fletchgqc) – das Docker-Sandboxing, auf dem dieses Projekt aufbaut
+- **Portkey-Setup** bereitgestellt durch codecentric
