@@ -331,27 +331,35 @@ EOF
     fi
 fi
 
-# --- Step 8: Alias setup ---
+# --- Step 8: Symlink setup ---
 
-ALIAS_LINE="alias obsidian-agent=\"$SCRIPT_DIR/obsidian-agent.sh\""
-SHELL_RC="$HOME/.zshrc"
+SYMLINK_PATH="/usr/local/bin/obsidian-agent"
+SYMLINK_TARGET="$SCRIPT_DIR/obsidian-agent.sh"
 
-if grep -qF "alias obsidian-agent=" "$SHELL_RC" 2>/dev/null; then
-    success "Alias 'obsidian-agent' ist bereits in $SHELL_RC eingerichtet."
+if [[ -L "$SYMLINK_PATH" ]] && [[ "$(readlink "$SYMLINK_PATH")" == "$SYMLINK_TARGET" ]]; then
+    success "Befehl 'obsidian-agent' ist bereits eingerichtet."
 else
-    info "Alias einrichten"
+    info "Befehl 'obsidian-agent' einrichten"
     echo ""
-    echo "    Damit du einfach 'obsidian-agent' im Terminal tippen kannst,"
-    echo "    kann ein Alias in deiner $SHELL_RC eingerichtet werden."
+    echo "    Damit du überall einfach 'obsidian-agent' tippen kannst,"
+    echo "    wird ein Symlink in /usr/local/bin erstellt."
+    echo "    Dafür wird einmalig dein Mac-Passwort benötigt."
     echo ""
-    if ask_yes_no "Alias jetzt einrichten?"; then
-        echo "$ALIAS_LINE" >> "$SHELL_RC"
-        success "Alias wurde zu $SHELL_RC hinzugefügt."
-        echo "    Wird beim nächsten Terminal-Fenster aktiv, oder jetzt mit: source $SHELL_RC"
+    if ask_yes_no "Jetzt einrichten?"; then
+        # Ensure /usr/local/bin exists
+        if [[ ! -d /usr/local/bin ]]; then
+            sudo mkdir -p /usr/local/bin
+        fi
+        # Remove old symlink/file if it exists but points elsewhere
+        if [[ -e "$SYMLINK_PATH" ]] || [[ -L "$SYMLINK_PATH" ]]; then
+            sudo rm "$SYMLINK_PATH"
+        fi
+        sudo ln -s "$SYMLINK_TARGET" "$SYMLINK_PATH"
+        success "Befehl 'obsidian-agent' ist jetzt verfügbar."
     else
-        echo "    Kein Problem. Du kannst es später manuell nachholen:"
+        echo "    Kein Problem. Du kannst Claude Code auch so starten:"
         echo ""
-        echo "        echo '$ALIAS_LINE' >> $SHELL_RC"
+        echo "        $SYMLINK_TARGET"
         echo ""
     fi
 fi
@@ -363,10 +371,10 @@ info "Setup abgeschlossen!"
 echo ""
 echo "    So startest du Claude Code mit deinem Vault:"
 echo ""
-if grep -qF "alias obsidian-agent=" "$SHELL_RC" 2>/dev/null; then
+if [[ -L "$SYMLINK_PATH" ]]; then
     echo "        obsidian-agent"
 else
-    echo "        $SCRIPT_DIR/obsidian-agent.sh"
+    echo "        $SYMLINK_TARGET"
 fi
 echo ""
 echo "    Viel Spass!"

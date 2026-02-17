@@ -17,6 +17,7 @@ Bevor du loslegst, prüfe diese Checkliste:
 - [ ] **macOS** (Apple-Rechner)
 - [ ] **Docker Desktop** installiert und gestartet ([Download](https://www.docker.com/products/docker-desktop/))
 - [ ] **Obsidian** installiert mit einem Vault auf deinem Rechner
+- [ ] **Obsidian Terminal-Plugin** (wird in Obsidian installiert – siehe Anleitung unten)
 - [ ] **Portkey API-Schlüssel** (siehe [Portkey-Anleitung im Confluence](https://confluence.codecentric.de/spaces/TOOLS/pages/340230181/Portkey))
 
 ### Obsidian installieren und Vault erstellen
@@ -83,11 +84,44 @@ Das Setup-Skript führt dich durch die Einrichtung:
 - Es fragt nach dem Pfad zu deinem Obsidian Vault
 - Es bereitet dein Vault für die KI-Nutzung vor
 
-Das Setup-Skript fragt auch nach deinem Portkey-Schlüssel und richtet auf Wunsch einen Alias ein, damit du künftig einfach `obsidian-agent` tippen kannst.
+Das Setup-Skript fragt auch nach deinem Portkey-Schlüssel und richtet den Befehl `obsidian-agent` ein (dafür wird einmalig dein Mac-Passwort benötigt).
 
 ## Tägliche Nutzung
 
-### Claude starten
+Es gibt zwei Wege, Claude Code zu starten: direkt in Obsidian (empfohlen) oder über ein separates Terminal-Fenster.
+
+### Option A: Direkt in Obsidian (empfohlen)
+
+Mit dem Plugin **Terminal** kannst du Claude Code direkt in Obsidian nutzen – ohne die App zu verlassen.
+
+#### Terminal-Plugin installieren
+
+1. Öffne Obsidian und gehe zu **Einstellungen > Community Plugins**
+2. Falls nötig, klicke auf **Eingeschränkter Modus deaktivieren** und bestätige
+3. Klicke auf **Durchsuchen** und suche nach **Terminal**
+4. Installiere das Plugin von **polyipseity** und aktiviere es
+
+#### Claude Code in Obsidian starten
+
+1. Öffne die Befehlspalette mit `Cmd + P`
+2. Tippe **Terminal** und wähle **Terminal: Open Terminal**
+3. Im Terminal-Fenster tippe:
+
+```bash
+obsidian-agent
+```
+
+Claude Code startet jetzt in einem Fenster innerhalb von Obsidian. Du kannst direkt losschreiben – Claude hat Zugriff auf dein Vault, aber auf nichts anderes.
+
+#### Tipps für die Nutzung in Obsidian
+
+- Du kannst das Terminal-Fenster an den unteren Rand oder die Seite ziehen
+- Mit `Cmd + P` → **Terminal: Open Terminal** öffnest du jederzeit ein neues Terminal
+- Deine Notizen bleiben im Hauptbereich sichtbar, während du unten mit Claude arbeitest
+
+### Option B: Separates Terminal-Fenster
+
+Falls du lieber ein eigenes Terminal-Fenster nutzt:
 
 ```bash
 obsidian-agent
