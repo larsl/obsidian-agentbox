@@ -271,7 +271,71 @@ fi
 
 echo "    Du kannst die Datei jetzt in Obsidian öffnen und an dein Vault anpassen."
 
-# --- Step 6: Skip Claude Code onboarding ---
+# --- Step 6: Install Terminal plugin ---
+
+OBSIDIAN_DIR="$VAULT_PATH/.obsidian"
+PLUGIN_ID="terminal"
+PLUGIN_DIR="$OBSIDIAN_DIR/plugins/$PLUGIN_ID"
+COMMUNITY_PLUGINS="$OBSIDIAN_DIR/community-plugins.json"
+TERMINAL_REPO="polyipseity/obsidian-terminal"
+
+if [[ -d "$PLUGIN_DIR" ]]; then
+    success "Terminal-Plugin ist bereits installiert."
+else
+    info "Obsidian Terminal-Plugin"
+
+    echo ""
+    echo "    Das Terminal-Plugin ermöglicht es, Claude Code direkt"
+    echo "    in Obsidian zu nutzen – ohne extra Terminal-Fenster."
+    echo ""
+
+    if ask_yes_no "Terminal-Plugin jetzt installieren?"; then
+        # Get latest release tag
+        RELEASE_URL="https://api.github.com/repos/$TERMINAL_REPO/releases/latest"
+        RELEASE_TAG=$(curl -sL "$RELEASE_URL" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tag_name',''))" 2>/dev/null)
+
+        if [[ -z "$RELEASE_TAG" ]]; then
+            warn "Konnte neueste Version nicht ermitteln. Bitte installiere das Plugin manuell in Obsidian."
+        else
+            DL_BASE="https://github.com/$TERMINAL_REPO/releases/download/$RELEASE_TAG"
+            mkdir -p "$PLUGIN_DIR"
+
+            echo "    Lade Terminal-Plugin $RELEASE_TAG herunter..."
+            curl -sL "$DL_BASE/main.js" -o "$PLUGIN_DIR/main.js" \
+                && curl -sL "$DL_BASE/manifest.json" -o "$PLUGIN_DIR/manifest.json" \
+                && curl -sL "$DL_BASE/styles.css" -o "$PLUGIN_DIR/styles.css"
+
+            if [[ -f "$PLUGIN_DIR/manifest.json" ]]; then
+                # Add plugin to community-plugins.json (enables it in Obsidian)
+                python3 -c "
+import json, os
+path = '$COMMUNITY_PLUGINS'
+plugins = []
+if os.path.exists(path):
+    with open(path) as f:
+        plugins = json.load(f)
+if '$PLUGIN_ID' not in plugins:
+    plugins.append('$PLUGIN_ID')
+with open(path, 'w') as f:
+    json.dump(plugins, f, indent=2)
+    f.write('\n')
+"
+                success "Terminal-Plugin $RELEASE_TAG installiert."
+                echo "    Updates werden über Obsidians Plugin-Verwaltung angeboten."
+
+            else
+                warn "Download fehlgeschlagen. Bitte installiere das Plugin manuell in Obsidian:"
+                echo "    Einstellungen > Community Plugins > Durchsuchen > 'Terminal'"
+                rm -rf "$PLUGIN_DIR"
+            fi
+        fi
+    else
+        echo "    Du kannst es jederzeit manuell installieren:"
+        echo "    Obsidian > Einstellungen > Community Plugins > Durchsuchen > 'Terminal'"
+    fi
+fi
+
+# --- Step 7: Skip Claude Code onboarding ---
 
 info "Konfiguriere Claude Code für Portkey..."
 

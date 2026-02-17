@@ -96,6 +96,8 @@ Mit dem Plugin **Terminal** kannst du Claude Code direkt in Obsidian nutzen – 
 
 #### Terminal-Plugin installieren
 
+Das Setup-Skript bietet an, das Terminal-Plugin automatisch zu installieren. Falls du es manuell installieren möchtest:
+
 1. Öffne Obsidian und gehe zu **Einstellungen > Community Plugins**
 2. Falls nötig, klicke auf **Eingeschränkter Modus deaktivieren** und bestätige
 3. Klicke auf **Durchsuchen** und suche nach **Terminal**
